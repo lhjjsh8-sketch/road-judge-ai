@@ -149,11 +149,11 @@ pm2 save
 
 | Name | Role | Profile |
 |:---:|:---:|:---:|
-| **나형선** | Backend / Frontend / AI | React |
-| **송수민** | Backend / Frontend / AI | React |
-| **이예영** | Backend / Frontend / AI | React |
-| **임은석** | Backend / Frontend / AI | React |
-| **함성민** | Backend / Frontend / AI | React |
+| **나형선** | Backend / Frontend / AI | |
+| **송수민** | Backend / Frontend / AI | |
+| **이예영** | Backend / Frontend / AI | |
+| **임은석** | Backend / Frontend / AI | |
+| **함성민** | Backend / Frontend / AI | |
 
 
 ---
