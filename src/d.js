@@ -24,7 +24,7 @@ html,body,#root{height:100%;font-family:'Noto Sans KR','Outfit',system-ui,sans-s
 
 /* ───────── shared components ───────── */
 const Phone = ({ children }) => (
-  <div className="phone-container" style={{ maxWidth: 430, margin: "0 auto", minHeight: "100dvh", background: "#FFFFFF", position: "relative", overflow: "hidden", boxShadow: "0 0 80px rgba(26,54,93,.08)" }}>{children}</div>
+  <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100dvh", background: "#FFFFFF", position: "relative", overflow: "hidden", boxShadow: "0 0 80px rgba(26,54,93,.08)" }}>{children}</div>
 );
 const StepDots = ({ current, total = 4 }) => (
   <div style={{ display: "flex", gap: 6, justifyContent: "center", padding: "8px 0 4px" }}>
@@ -93,37 +93,11 @@ const CustomVideoPlayer = ({ src, trimStart = 0, trimEnd, isTrimmed = false }) =
 };
 
 /* ───────── PAGE 1 ───────── */
-const Page1 = ({ onNext, bigFont, setBigFont }) => {
+const Page1 = ({ onNext }) => {
   const [show, setShow] = useState(false);
   useEffect(() => { setTimeout(() => setShow(true), 100); }, []);
   return (
     <Phone>
-      {/* ✅ 글자 크기 토글 */}
-      <div style={{ position: "absolute", top: 16, right: 16, zIndex: 100 }}>
-        <button onClick={() => setBigFont(!bigFont)} style={{
-          background: bigFont ? BLUE[500] : "#F7FBFF",
-          color: bigFont ? "#FFF" : BLUE[500],
-          border: `1.5px solid ${BLUE[300]}`,
-          borderRadius: 10, padding: "8px 14px",
-          fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
-          display: "flex", alignItems: "center", gap: 6
-        }}>
-          <span style={{ fontSize: 12, fontWeight: 400 }}>가</span>
-          <span style={{ fontSize: 10, color: bigFont ? "#FFF" : "#A0AEC0" }}>→</span>
-          <span style={{ fontSize: 20, fontWeight: 900 }}>가</span>
-          <span style={{
-            fontSize: 10,
-            marginLeft: 4,
-            padding: "2px 6px",
-            borderRadius: 6,
-            background: bigFont ? "rgba(255,255,255,.25)" : `${BLUE[500]}15`,
-            fontWeight: 800,
-          }}>
-            {bigFont ? "ON" : "OFF"}
-          </span>
-        </button>
-      </div>
-
       <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "0 24px", background: "linear-gradient(180deg,#FFFFFF 0%,#F0F7FF 100%)", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -80, right: -60, width: 260, height: 260, borderRadius: "50%", background: `radial-gradient(circle,${BLUE[100]}60,transparent 70%)`, animation: "float 6s ease-in-out infinite" }} />
         <div style={{ position: "absolute", bottom: 120, left: -80, width: 200, height: 200, borderRadius: "50%", background: `radial-gradient(circle,${BLUE[50]}80,transparent 70%)`, animation: "float 8s ease-in-out infinite 1s" }} />
@@ -133,14 +107,11 @@ const Page1 = ({ onNext, bigFont, setBigFont }) => {
             <img src="/logo.png" alt="AI 문철 로고" style={{ width: 110, height: 110, objectFit: "contain", display: "block", borderRadius: "20%" }} />
           </div>
           <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: -1.5, color: BLUE[700], fontFamily: "'Outfit','Noto Sans KR',sans-serif" }}>AI 문철</h1>
+
+
         </div>
         <div style={{ flex: 1.2 }} />
         <div style={{ paddingBottom: 48, opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)", transition: "all .8s cubic-bezier(.22,1,.36,1) .3s" }}>
-          <p style={{ fontSize: 11, color: "#A0AEC0", textAlign: "center", lineHeight: 1.6, marginBottom: 16 }}>
-            본 서비스의 AI 분석 결과는 참고용으로만 제공되며, 법적 효력 및 <br />
-            증거 능력이 없습니다. 정확한 과실비율 판정은 보험사·법원 등 <br />
-            전문기관의 판단을 따르시기 바랍니다.
-          </p>
           <PrimaryBtn onClick={onNext}>분석 시작하기</PrimaryBtn>
         </div>
       </div>
@@ -244,7 +215,7 @@ const Page2 = ({ onNext, onBack, setVideoData }) => {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: "#C6F6D5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>✓</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p className="filename-text" style={{ fontSize: 14, fontWeight: 600, color: BLUE[700], overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: BLUE[700], overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</p>
                   {duration ? (
                     <p style={{ fontSize: 12, color: "#8892B0", marginTop: 2 }}>영상 길이: {duration.toFixed(1)}초</p>
                   ) : converting ? (
@@ -363,89 +334,18 @@ const Page4 = ({ onNext, onBack, videoData }) => {
 };
 
 /* ═══════════════════════════════════════════════════════
-   PAGE 5 : RESULTS — ✅ SSE + 분석자 탭 (형선/은석/종합)
+   PAGE 5 : RESULTS — ✅ SSE 스트리밍으로 실시간 진행
    ═══════════════════════════════════════════════════════ */
-
-/* 라벨 맵 */
-const LABEL_MAP_PLACE = {
-  0: "직선 도로", 1: "신호 없는 교차로", 2: "신호 있는 교차로",
-  3: "T자형 도로", 4: "기타 도로", 5: "주차장",
-  6: "회전 교차로", 13: "고속도로"
-};
-
-const ANALYSTS = [
-  { name: "형선", icon: "🧑‍💻", key: "형선" },
-  { name: "은석", icon: "🧑‍🔬", key: "은석" },
-  { name: "종합", icon: "🤖", key: "_avg" },
-];
-
-const MODEL_FIELD_MAP = [
-  { codeKey: "accident_place", probKey: "probability", labelMap: LABEL_MAP_PLACE },
-  { codeKey: "accident_place_feature_code", probKey: "probability", labelMap: null },
-  { codeKey: "vehicle_a_code", probKey: "prob", labelMap: null },
-  { codeKey: "vehicle_b_code", probKey: "prob", labelMap: null },
-];
-
-const transformGroupData = (groupArr, labelMaps) => {
-  if (!groupArr || groupArr.length < 4) return {};
-  const result = {};
-  const typeLabelMap = labelMaps?.type || {};
-  const actionLabelMap = labelMaps?.action || {};
-  const allMaps = [LABEL_MAP_PLACE, typeLabelMap, actionLabelMap, actionLabelMap];
-  for (let i = 0; i < 4; i++) {
-    const raw = groupArr[i];
-    const field = MODEL_FIELD_MAP[i];
-    const lmap = allMaps[i];
-    if (!raw || raw.length === 0) { result[`model${i + 1}`] = null; continue; }
-    const top = raw.map(item => {
-      const code = item[field.codeKey];
-      const prob = item[field.probKey] || 0;
-      const labelText = (lmap && lmap[code]) ? `${lmap[code]}` : `코드 ${code}`;
-      return { label: labelText, prob };
-    });
-    result[`model${i + 1}`] = { label: MODEL_LABELS[i], top };
-  }
-  return result;
-};
-
-const averageGroups = (g1, g2) => {
-  if (!g1 || g1.length < 4 || !g2 || g2.length < 4) return g1 || g2 || [];
-  const avg = [];
-  for (let i = 0; i < 4; i++) {
-    const a = g1[i] || [];
-    const b = g2[i] || [];
-    if (a.length === 0) { avg.push(b); continue; }
-    if (b.length === 0) { avg.push(a); continue; }
-    const field = MODEL_FIELD_MAP[i];
-    const merged = {};
-    a.forEach(item => {
-      const code = item[field.codeKey];
-      merged[code] = { ...item, [field.probKey]: (item[field.probKey] || 0) / 2 };
-    });
-    b.forEach(item => {
-      const code = item[field.codeKey];
-      if (merged[code]) {
-        merged[code][field.probKey] += (item[field.probKey] || 0) / 2;
-      } else {
-        merged[code] = { ...item, [field.probKey]: (item[field.probKey] || 0) / 2 };
-      }
-    });
-    const sorted = Object.values(merged).sort((x, y) => (y[field.probKey] || 0) - (x[field.probKey] || 0));
-    avg.push(sorted);
-  }
-  return avg;
-};
-
 const MODEL_KEYS = ["model1", "model2", "model3", "model4"];
 
 const ResultCard = ({ data, index, visible }) => {
   const color = MODEL_COLORS[index];
   const icon = MODEL_ICONS[index];
-  if (!data || !data.top || data.top.length === 0) return null;
+  if (!data || !data.top) return null;
   return (
     <div style={{ background: "#FFF", border: "1px solid #EDF2F7", borderRadius: 16, padding: "16px 12px", boxShadow: "0 2px 12px rgba(0,0,0,.04)", minWidth: 0, overflow: "hidden", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: `all .5s cubic-bezier(.22,1,.36,1) ${index * 0.1}s` }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: "#8892B0", letterSpacing: 1.5, paddingBottom: 8, borderBottom: `2px solid ${color}`, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}><span>{icon}</span>{data.label}</div>
-      <p className="result-card-label" style={{ fontSize: 13, fontWeight: 800, color: BLUE[700], lineHeight: 1.4, marginBottom: 4, wordBreak: "keep-all", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.top[0].label.replace(/\s*\(\d+\)\s*$/, '')}</p>
+      <p style={{ fontSize: 13, fontWeight: 800, color: BLUE[700], lineHeight: 1.4, marginBottom: 4, wordBreak: "keep-all", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{data.top[0].label.replace(/\s*\(\d+\)\s*$/, '')}</p>
       <p style={{ fontSize: 24, fontWeight: 900, color, marginBottom: 10, fontFamily: "'Outfit',sans-serif" }}>{(data.top[0].prob * 100).toFixed(1)}%</p>
     </div>
   );
@@ -460,7 +360,6 @@ const FaultBox = ({ label, pct, role, color, colorLight }) => (
 );
 
 const Page5 = ({ onBack, onHome, videoData }) => {
-  const shareRef = useRef(null);
   const [status, setStatus] = useState("analyzing");
   const [statusMsg, setStatusMsg] = useState("서버에 영상 전송 중...");
   const [progress, setProgress] = useState(0);
@@ -468,9 +367,8 @@ const Page5 = ({ onBack, onHome, videoData }) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [expandAlts, setExpandAlts] = useState(false);
   const [expandModels, setExpandModels] = useState(false);
-  const [expandFault, setExpandFault] = useState(false);
+  const [expandFault, setExpandFault] = useState(false);  // ✅ 모델별 완료 상태 (SSE로 개별 추적)
   const [modelDone, setModelDone] = useState([false, false, false, false]);
-  const [selectedAnalyst, setSelectedAnalyst] = useState(0);
   const [vlmReport, setVlmReport] = useState(null);
   const [vlmLoading, setVlmLoading] = useState(false);
 
@@ -478,75 +376,28 @@ const Page5 = ({ onBack, onHome, videoData }) => {
     setVlmLoading(true);
     setVlmReport(null);
     try {
+      // 모델 결과를 기반으로 VLM 리포트 생성 (더미)
       await new Promise(r => setTimeout(r, 2000));
+
+      const place = apiResult?.models?.model1?.top?.[0]?.label || "알 수 없음";
+      const type = apiResult?.models?.model2?.top?.[0]?.label || "알 수 없음";
+      const carA = apiResult?.models?.model3?.top?.[0]?.label || "알 수 없음";
+      const carB = apiResult?.models?.model4?.top?.[0]?.label || "알 수 없음";
+      const fa = apiResult?.fault?.fa;
+      const fb = apiResult?.fault?.fb;
+
       const vlm = apiResult?.vlm_report;
-      if (vlm) {
-        // 문자열이면 배열로 변환, 배열이면 그대로
-        setVlmReport(Array.isArray(vlm) ? vlm : [vlm]);
-      } else {
-        setVlmReport(["VLM 리포트를 생성할 수 없습니다."]);
-      }
+
+      const templates = [
+        vlm
+      ];
+
+      const picked = templates[Math.floor(Math.random() * templates.length)];
+      setVlmReport(picked);
     } catch (err) {
       console.error("VLM 생성 실패:", err);
     } finally {
       setVlmLoading(false);
-    }
-  };
-
-  const handleShare = async () => {
-    if (!shareRef.current) return;
-    try {
-      if (!window.html2canvas) {
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-        document.head.appendChild(script);
-        await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; });
-      }
-
-      // ✅ 캡처 전: 애니메이션 강제 해제
-      const style = document.createElement("style");
-      style.id = "share-fix";
-      style.textContent = `
-        .fade-up, .fade-in, .scale-in {
-          animation: none !important;
-          opacity: 1 !important;
-          transform: none !important;
-        }
-      `;
-      document.head.appendChild(style);
-
-      const canvas = await window.html2canvas(shareRef.current, {
-        backgroundColor: "#FFFFFF",
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      // ✅ 캡처 후: 스타일 복원
-      document.getElementById("share-fix")?.remove();
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const file = new File([blob], "AI문철_분석결과.png", { type: "image/png" });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ title: "AI 문철 분석 결과", files: [file] });
-            return;
-          } catch (e) { }
-        }
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "AI문철_분석결과.png";
-        a.click();
-        URL.revokeObjectURL(url);
-      }, "image/png");
-    } catch (err) {
-      console.error("공유 실패:", err);
-      document.getElementById("share-fix")?.remove();
-      alert("이미지 생성에 실패했습니다.");
     }
   };
 
@@ -606,24 +457,10 @@ const Page5 = ({ onBack, onHome, videoData }) => {
                 setStatusMsg("영상 코덱 변환 중...");
               }
 
-              if (evt.type === "progress") {
-                setStatusMsg(evt.message || "분석 중...");
-                const pct = evt.percent || 0;
-                setProgress(pct);
-                // 8개 모델 → 4개 아이콘 매핑 (es+hs 2개씩 = 1개 아이콘)
-                const modelIdx = Math.min(3, Math.floor(pct / 25));
-                if (pct > 0) {
-                  setModelDone(prev => {
-                    const next = [...prev];
-                    for (let j = 0; j < modelIdx; j++) next[j] = true;
-                    return next;
-                  });
-                }
-              }
-
               if (evt.type === "model_start") {
                 const idx = evt.model_index;
                 const msgs = ["장소/배경 분석 중...", "사고유형 분석 중...", "차량 A 분석 중...", "차량 B 분석 중..."];
+                // 첫 모델은 바로, 이후는 0.8초 뒤에 메시지 변경 (완료! 메시지 보이도록)
                 if (idx === 0) {
                   setStatusMsg(`모델 ${idx + 1}/4: ${msgs[idx]}`);
                   setProgress(idx * 25);
@@ -651,21 +488,10 @@ const Page5 = ({ onBack, onHome, videoData }) => {
                 setProgress(100);
                 setStatusMsg("분석 완료!");
                 setModelDone([true, true, true, true]);
-
-                // 새 백엔드: input_data = {"은석": [...], "형선": [...]}
-                // 구 백엔드: models = {model1: ..., model2: ...}
-                const inputData = evt.input_data;
-                const avgData = (inputData && inputData["은석"] && inputData["형선"])
-                  ? averageGroups(inputData["은석"], inputData["형선"])
-                  : null;
-
                 setApiResult({
-                  input_data: inputData || null,
-                  avg_data: avgData,
-                  models: evt.models || null,  // 구 백엔드 호환
+                  models: evt.models,
                   fault: evt.fault,
                   alt_faults: evt.alt_faults,
-                  vlm_report: evt.vlm_report,
                 });
                 setTimeout(() => setStatus("done"), 400);
               }
@@ -693,32 +519,9 @@ const Page5 = ({ onBack, onHome, videoData }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoData?.sig]);
 
-  // 선택된 분석자의 모델 결과 가져오기
-  const getModelResults = () => {
-    if (!apiResult) return [];
-    const analyst = ANALYSTS[selectedAnalyst];
-    let groupData = null;
-
-    if (analyst.key === "_avg") {
-      groupData = apiResult.avg_data;
-    } else if (apiResult.input_data) {
-      groupData = apiResult.input_data[analyst.key];
-    }
-
-    if (groupData) {
-      const transformed = transformGroupData(groupData, apiResult.labelMaps);
-      return MODEL_KEYS.map(k => transformed[k] || null);
-    }
-
-    // 구 백엔드 호환: models 필드 직접 사용
-    if (apiResult.models) {
-      return MODEL_KEYS.map(k => apiResult.models[k] || null);
-    }
-
-    return [];
-  };
-
-  const modelResults = getModelResults();
+  const modelResults = apiResult
+    ? MODEL_KEYS.map((k) => apiResult.models?.[k] || null)
+    : [];
   const fault = apiResult?.fault;
   const altFaults = apiResult?.alt_faults || [];
 
@@ -769,168 +572,123 @@ const Page5 = ({ onBack, onHome, videoData }) => {
         {/* ═══ 결과 표시 ═══ */}
         {status === "done" && apiResult && (
           <>
-            {/* ── 캡쳐 대상 영역 ── */}
-            <div ref={shareRef} style={{ background: "#FFF" }}>
-              {/* ── 분석 영상 미리보기 ── */}
-              <SectionHeader icon="🎬" text={videoData?.isTrimmed ? "분석 영상" : "분석 영상"} color={BLUE[300]} />
-              <div className="fade-up">
-                <CustomVideoPlayer
-                  src={videoData?.url}
-                  trimStart={videoData?.trimStart || 0}
-                  trimEnd={videoData?.trimEnd || videoData?.duration || 10}
-                  isTrimmed={videoData?.isTrimmed || false}
-                />
-                {videoData?.isTrimmed && (
-                  <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                    <Badge color={ACCENT.orange} bg="#FFF8EB">✂️ {(videoData.trimEnd - videoData.trimStart).toFixed(1)}초 클립</Badge>
-                    <Badge color={BLUE[500]}>원본 {videoData.trimStart.toFixed(1)}초 ~ {videoData.trimEnd.toFixed(1)}초</Badge>
-                  </div>
-                )}
-              </div>
-
-              {fault && (
-                <div className="fade-up">
-                  <SectionHeader icon="⚖️" text="과실비율 산정 결과" color={ACCENT.red} />
-                  <div style={{ borderRadius: 18, background: "#F7FBFF", border: "1px solid #E2E8F0", padding: "22px 18px", boxShadow: "0 2px 16px rgba(0,0,0,.04)" }}>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                      <FaultBox label="차량 A 과실" pct={fault.fa} role={fault.role_a} color={ACCENT.red} colorLight={ACCENT.redLight} />
-                      <FaultBox label="차량 B 과실" pct={fault.fb} role={fault.role_b} color={BLUE[400]} colorLight={BLUE[50]} />
-                    </div>
-
-                    {altFaults.length > 0 && (
-                      <div>
-                        <button onClick={() => setExpandAlts(!expandAlts)} style={{ width: "100%", marginTop: 14, padding: "12px 16px", borderRadius: 12, border: "1px solid #E2E8F0", background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: BLUE[500], display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                          🔎 다른 가능성 보기 ({altFaults.length}건) <span style={{ transform: expandAlts ? "rotate(180deg)" : "rotate(0)", transition: "transform .3s ease", display: "inline-block" }}>▾</span>
-                        </button>
-                        {expandAlts && (
-                          <div className="fade-up" style={{ marginTop: 12 }}>
-                            {altFaults.map((alt, i) => (
-                              <div key={i} style={{ marginTop: i > 0 ? 12 : 0, padding: "14px 16px", borderRadius: 14, background: "#FAFCFF", border: "1px solid #EDF2F7" }}>
-
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                                  <div style={{ textAlign: "center", padding: "10px 8px", borderRadius: 10, background: ACCENT.redLight }}>
-                                    <p style={{ fontSize: 11, color: "#8892B0" }}>내 과실 (A)</p>
-                                    <p style={{ fontSize: 26, fontWeight: 900, color: ACCENT.red, fontFamily: "'Outfit',sans-serif" }}>{alt.fa}%</p>
-                                  </div>
-                                  <div style={{ textAlign: "center", padding: "10px 8px", borderRadius: 10, background: BLUE[50] }}>
-                                    <p style={{ fontSize: 11, color: "#8892B0" }}>상대 과실 (B)</p>
-                                    <p style={{ fontSize: 26, fontWeight: 900, color: BLUE[400], fontFamily: "'Outfit',sans-serif" }}>{alt.fb}%</p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            {/* ── 분석 영상 미리보기 ── */}
+            <SectionHeader icon="🎬" text={videoData?.isTrimmed ? "분석 영상" : "분석 영상"} color={BLUE[300]} />
+            <div className="fade-up">
+              <CustomVideoPlayer
+                src={videoData?.url}
+                trimStart={videoData?.trimStart || 0}
+                trimEnd={videoData?.trimEnd || videoData?.duration || 10}
+                isTrimmed={videoData?.isTrimmed || false}
+              />
+              {videoData?.isTrimmed && (
+                <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                  <Badge color={ACCENT.orange} bg="#FFF8EB">✂️ {(videoData.trimEnd - videoData.trimStart).toFixed(1)}초 클립</Badge>
+                  <Badge color={BLUE[500]}>원본 {videoData.trimStart.toFixed(1)}초 ~ {videoData.trimEnd.toFixed(1)}초</Badge>
                 </div>
               )}
-
-              {!fault && (
-                <div style={{ marginTop: 24, padding: "18px 20px", borderRadius: 14, background: ACCENT.orangeLight, border: `1px solid ${ACCENT.orange}30` }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#C05621" }}>⚠️ 과실비율 매칭 실패</p>
-                  <p style={{ fontSize: 13, color: "#744210", marginTop: 6, lineHeight: 1.6 }}>DB에서 정확히 일치하는 조합을 찾지 못했습니다. CSV 파일이 ~/Downloads에 있는지 확인해주세요.</p>
-                </div>
-              )}
-
-              {/* ── AI 분석 결과 (분석자 탭) ── */}
-              <div style={{ marginTop: 12 }}>
-                <button onClick={() => setExpandModels(!expandModels)} style={{ width: "100%", padding: "14px 18px", borderRadius: 14, border: "1px solid #E2E8F0", background: "#F7FBFF", cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: BLUE[600], display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  📋 AI 모델별 분석 결과 <span style={{ transform: expandModels ? "rotate(180deg)" : "rotate(0)", transition: "transform .3s ease", display: "inline-block", fontSize: 14 }}>▾</span>
-                </button>
-                {expandModels && (
-                  <div className="fade-up" style={{ marginTop: 12 }}>
-                    {/* ── 분석자 탭 ── */}
-                    <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-                      {ANALYSTS.map((a, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setSelectedAnalyst(i)}
-                          style={{
-                            flex: 1,
-                            padding: "10px 6px",
-                            borderRadius: 12,
-                            border: selectedAnalyst === i ? `2px solid ${BLUE[500]}` : "2px solid #E2E8F0",
-                            background: selectedAnalyst === i ? `${BLUE[500]}10` : "#FFF",
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                            fontSize: 13,
-                            fontWeight: selectedAnalyst === i ? 800 : 600,
-                            color: selectedAnalyst === i ? BLUE[500] : "#8892B0",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: 4,
-                            transition: "all .2s ease",
-                          }}
-                        >
-                          <span style={{ fontSize: 20 }}>{a.icon}</span>
-                          <span>{a.name}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* ── 선택된 분석자 결과 카드 ── */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%" }}>
-                      {modelResults.map((d, i) => (
-                        <ResultCard key={`${selectedAnalyst}-${i}`} data={d} index={i} visible={true} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-
-              {/* ── VLM 리포트 ── */}
-              <div style={{ marginTop: 24 }}>
-                {!vlmReport && !vlmLoading && (
-                  <button onClick={generateVlm} style={{ width: "100%", height: 52, borderRadius: 14, border: "none", background: `linear-gradient(135deg, ${ACCENT.purple}, ${BLUE[400]})`, cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 16px rgba(183,148,244,.3)" }}>
-                    AI 영상 분석 리포트 생성하기
-                  </button>
-                )}
-                {vlmLoading && (
-                  <div style={{ textAlign: "center", padding: "20px", borderRadius: 14, background: "#FAF5FF", border: "1px solid #E9D8FD" }}>
-                    <div style={{ width: 36, height: 36, margin: "0 auto 10px", border: `3px solid #E9D8FD`, borderTopColor: ACCENT.purple, borderRadius: "50%", animation: "spin .8s linear infinite" }} />
-                    <p style={{ fontSize: 14, fontWeight: 600, color: ACCENT.purple }}>VLM 리포트 생성 중...</p>
-                  </div>
-                )}
-                {vlmReport && (
-                  <div className="fade-up" style={{ borderRadius: 16, background: "#FAF5FF", border: "1px solid #E9D8FD", padding: "18px 16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #E9D8FD" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 18 }}>📝</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: BLUE[700] }}>AI 영상 분석 리포트</span>
-                      </div>
-                      <Badge color={ACCENT.purple} bg="#F3E8FF">VLM</Badge>
-                    </div>
-                    {vlmReport.map((sentence, i) => (
-                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", borderTop: i > 0 ? "1px solid #F3E8FF" : "none" }}>
-                        <div style={{ width: 26, height: 26, borderRadius: 8, background: "#F3E8FF", border: "1px solid #E9D8FD", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: ACCENT.purple, flexShrink: 0 }}>{i + 1}</div>
-                        <p style={{ flex: 1, fontSize: 14, color: "#4A5568", lineHeight: 1.7, wordBreak: "keep-all" }}>{sentence}</p>
-                      </div>
-                    ))}
-                    <button onClick={generateVlm} style={{ width: "100%", marginTop: 14, padding: "12px 16px", borderRadius: 12, border: "1px solid #E9D8FD", background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: ACCENT.purple, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                      다른 결과 생성하기
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div style={{ marginTop: 12 }}>
-                <button onClick={handleShare} style={{ width: "100%", height: 52, borderRadius: 14, border: "none", background: `linear-gradient(135deg,${BLUE[500]},${BLUE[300]})`, cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 20px rgba(43,122,184,.3)" }}>
-                  📤 결과 공유하기
-                </button>
-              </div>
-
-              <div style={{ marginTop: 12 }}>
-                <button onClick={onHome} style={{ width: "100%", height: 52, borderRadius: 14, border: `2px solid ${BLUE[300]}`, background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: BLUE[500], display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  🏠 처음으로
-                </button>
-              </div>
             </div>
 
+            {fault && (
+              <div className="fade-up">
+                <SectionHeader icon="⚖️" text="과실비율 산정 결과" color={ACCENT.red} />
+                <div style={{ borderRadius: 18, background: "#F7FBFF", border: "1px solid #E2E8F0", padding: "22px 18px", boxShadow: "0 2px 16px rgba(0,0,0,.04)" }}>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    <FaultBox label="차량 A 과실" pct={fault.fa} role={fault.role_a} color={ACCENT.red} colorLight={ACCENT.redLight} />
+                    <FaultBox label="차량 B 과실" pct={fault.fb} role={fault.role_b} color={BLUE[400]} colorLight={BLUE[50]} />
+                  </div>
+
+                  {altFaults.length > 0 && (
+                    <div>
+                      <button onClick={() => setExpandAlts(!expandAlts)} style={{ width: "100%", marginTop: 14, padding: "12px 16px", borderRadius: 12, border: "1px solid #E2E8F0", background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: BLUE[500], display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                        🔎 다른 가능성 보기 ({altFaults.length}건) <span style={{ transform: expandAlts ? "rotate(180deg)" : "rotate(0)", transition: "transform .3s ease", display: "inline-block" }}>▾</span>
+                      </button>
+                      {expandAlts && (
+                        <div className="fade-up" style={{ marginTop: 12 }}>
+                          {altFaults.map((alt, i) => (
+                            <div key={i} style={{ marginTop: i > 0 ? 12 : 0, padding: "14px 16px", borderRadius: 14, background: "#FAFCFF", border: "1px solid #EDF2F7" }}>
+                              <p style={{ fontSize: 12, color: "#4A5568", margin: "8px 0 10px", lineHeight: 1.6 }}>{alt.desc}</p>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                <div style={{ textAlign: "center", padding: "10px 8px", borderRadius: 10, background: ACCENT.redLight }}>
+                                  <p style={{ fontSize: 11, color: "#8892B0" }}>내 과실 (A)</p>
+                                  <p style={{ fontSize: 26, fontWeight: 900, color: ACCENT.red, fontFamily: "'Outfit',sans-serif" }}>{alt.fa}%</p>
+                                </div>
+                                <div style={{ textAlign: "center", padding: "10px 8px", borderRadius: 10, background: BLUE[50] }}>
+                                  <p style={{ fontSize: 11, color: "#8892B0" }}>상대 과실 (B)</p>
+                                  <p style={{ fontSize: 26, fontWeight: 900, color: BLUE[400], fontFamily: "'Outfit',sans-serif" }}>{alt.fb}%</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {!fault && (
+              <div style={{ marginTop: 24, padding: "18px 20px", borderRadius: 14, background: ACCENT.orangeLight, border: `1px solid ${ACCENT.orange}30` }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#C05621" }}>⚠️ 과실비율 매칭 실패</p>
+                <p style={{ fontSize: 13, color: "#744210", marginTop: 6, lineHeight: 1.6 }}>DB에서 정확히 일치하는 조합을 찾지 못했습니다. CSV 파일이 ~/Downloads에 있는지 확인해주세요.</p>
+              </div>
+            )}
+
+            {/* ── AI 분석 결과 (토글) ── */}
+            <div style={{ marginTop: 12 }}>
+              <button onClick={() => setExpandModels(!expandModels)} style={{ width: "100%", padding: "14px 18px", borderRadius: 14, border: "1px solid #E2E8F0", background: "#F7FBFF", cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: BLUE[600], display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                📋 AI 모델별 분석 결과 <span style={{ transform: expandModels ? "rotate(180deg)" : "rotate(0)", transition: "transform .3s ease", display: "inline-block", fontSize: 14 }}>▾</span>
+              </button>
+              {expandModels && (
+                <div className="fade-up" style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%" }}>
+                  {modelResults.map((d, i) => (
+                    <ResultCard key={i} data={d} index={i} visible={true} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+
+            {/* ── VLM 리포트 ── */}
+            <div style={{ marginTop: 24 }}>
+              {!vlmReport && !vlmLoading && (
+                <button onClick={generateVlm} style={{ width: "100%", padding: "14px 18px", borderRadius: 14, border: "none", background: `linear-gradient(135deg, ${ACCENT.purple}, ${BLUE[400]})`, cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 16px rgba(183,148,244,.3)" }}>
+                  AI 영상 분석 리포트 생성하기
+                </button>
+              )}
+              {vlmLoading && (
+                <div style={{ textAlign: "center", padding: "20px", borderRadius: 14, background: "#FAF5FF", border: "1px solid #E9D8FD" }}>
+                  <div style={{ width: 36, height: 36, margin: "0 auto 10px", border: `3px solid #E9D8FD`, borderTopColor: ACCENT.purple, borderRadius: "50%", animation: "spin .8s linear infinite" }} />
+                  <p style={{ fontSize: 14, fontWeight: 600, color: ACCENT.purple }}>VLM 리포트 생성 중...</p>
+                </div>
+              )}
+              {vlmReport && (
+                <div className="fade-up" style={{ borderRadius: 16, background: "#FAF5FF", border: "1px solid #E9D8FD", padding: "18px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #E9D8FD" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 18 }}>📝</span>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: BLUE[700] }}>AI 영상 분석 리포트</span>
+                    </div>
+                    <Badge color={ACCENT.purple} bg="#F3E8FF">VLM</Badge>
+                  </div>
+                  {vlmReport.map((sentence, i) => (
+                    <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", borderTop: i > 0 ? "1px solid #F3E8FF" : "none" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, background: "#F3E8FF", border: "1px solid #E9D8FD", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: ACCENT.purple, flexShrink: 0 }}>{i + 1}</div>
+                      <p style={{ flex: 1, fontSize: 14, color: "#4A5568", lineHeight: 1.7, wordBreak: "keep-all" }}>{sentence}</p>
+                    </div>
+                  ))}
+                  <button onClick={generateVlm} style={{ width: "100%", marginTop: 14, padding: "12px 16px", borderRadius: 12, border: "1px solid #E9D8FD", background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 600, color: ACCENT.purple, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                    다른 결과 생성하기
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: 32 }}>
+              <button onClick={onHome} style={{ width: "100%", height: 52, borderRadius: 14, border: `2px solid ${BLUE[300]}`, background: "#FFF", cursor: "pointer", fontFamily: "inherit", fontSize: 15, fontWeight: 700, color: BLUE[500], display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>🏠 처음으로</button>
+            </div>
 
           </>
         )}
@@ -945,66 +703,11 @@ const Page5 = ({ onBack, onHome, videoData }) => {
 export default function App() {
   const [page, setPage] = useState(1);
   const [videoData, setVideoData] = useState(null);
-  const [bigFont, setBigFont] = useState(false);
-  useEffect(() => {
-    if (!document.getElementById("ai-muncheol-css")) {
-      const s = document.createElement("style");
-      s.id = "ai-muncheol-css";
-      s.textContent = GLOBAL_CSS;
-      document.head.appendChild(s);
-    }
-    // ✅ 큰 글씨 모드
-    let el = document.getElementById("ai-muncheol-bigfont");
-    if (!el) {
-      el = document.createElement("style");
-      el.id = "ai-muncheol-bigfont";
-      document.head.appendChild(el);
-    }
-    el.textContent = bigFont ? `
-      /* ✅ div 제외 — 중첩 누적 방지 */
-      .phone-container p,
-      .phone-container span,
-      .phone-container button,
-      .phone-container h2,
-      .phone-container code {
-        font-size: calc(1em + 4px) !important;
-      }
-      /* 첫 페이지 보호 */
-      .phone-container h1 {
-        font-size: 42px !important;
-      }
-      /* 버튼 높이 유연하게 */
-      .phone-container button {
-        height: auto !important;
-        min-height: 48px !important;
-        padding-top: 12px !important;
-        padding-bottom: 12px !important;
-        white-space: normal !important;
-        word-break: keep-all !important;
-      }
-      /* 파일명 줄바꿈 */
-      .phone-container .filename-text {
-        white-space: normal !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-        word-break: break-all !important;
-        line-height: 1.4 !important;
-      }
-      /* ResultCard 라벨 잘림 방지 */
-      .phone-container .result-card-label {
-        -webkit-line-clamp: unset !important;
-        -webkit-box-orient: unset !important;
-        display: block !important;
-        overflow: visible !important;
-        white-space: normal !important;
-        word-break: keep-all !important;
-      }
-    ` : "";
-  }, [bigFont]);
+  useEffect(() => { if (!document.getElementById("ai-muncheol-css")) { const s = document.createElement("style"); s.id = "ai-muncheol-css"; s.textContent = GLOBAL_CSS; document.head.appendChild(s); } }, []);
   const goHome = () => { setPage(1); setVideoData(null); };
   const goToUpload = () => { setPage(2); setVideoData(null); };
   switch (page) {
-    case 1: return <Page1 onNext={() => setPage(2)} bigFont={bigFont} setBigFont={setBigFont} />;
+    case 1: return <Page1 onNext={() => setPage(2)} />;
     case 2: return <Page2 onBack={() => setPage(1)} onNext={(skip) => setPage(skip ? 4 : 3)} setVideoData={setVideoData} />;
     case 3: return <Page3 onBack={goToUpload} onNext={() => setPage(4)} videoData={videoData} setVideoData={setVideoData} />;
     case 4: return <Page4 onBack={() => setPage(videoData?.duration > 10 ? 3 : 2)} onNext={() => setPage(5)} videoData={videoData} />;
