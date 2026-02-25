@@ -1,70 +1,160 @@
-# Getting Started with Create React App
+# 🚘 Road Judge AI (AI 문철) - 교통사고 과실비율 자동 산정 프로그램
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
+![React](https://img.shields.io/badge/React-18.2-20232A?logo=react&logoColor=61DAFB)
+![Flask](https://img.shields.io/badge/Flask-2.0-black?logo=flask&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0-EE4C2C?logo=pytorch&logoColor=white)
+![MMAction2](https://img.shields.io/badge/MMAction2-1.0-lightgrey?logo=opencollective)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Object_Detection-orange?logo=yolo)
 
-## Available Scripts
+> **"몇 대 몇?"** > 블랙박스 영상을 입력받아 AI가 사고 상황을 정밀 분석하고, 대한민국 법원 판례 기반의 과실 비율을 예측해주는 서비스입니다.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📖 프로젝트 소개
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+이 프로젝트는 교통사고 영상을 기반으로 사전에 정의된 데이터셋(434가지 상황)과 매칭하여 **최종 과실 비율(A:B)을 산정해주는 웹 기반 분석 프로그램**입니다.
+사용 목적에 따라 추론 속도와 정확도를 선택할 수 있도록, 두 가지 다른 아키텍처로 학습된 **듀얼 AI 모델 그룹(정밀 분석 / 신속 처리)**을 병렬로 제공합니다.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **[정밀 분석 모델] (VideoMAV2 적용):** 복잡한 Loss(Focal, LDAM) 조정을 거친 무거운 아키텍처로, 시간이 소요되더라도 깊이 있는 특징 파악과 높은 정확도를 제공합니다.
+- **[신속 처리 모델] (ResNet3D + I3D 적용):** 효율성이 검증된 아키텍처를 적용하여 리소스 소모를 줄이고 1차 판독용으로 신속하게 결과를 반환합니다.
 
-### `npm test`
+```mermaid
+graph LR
+    User[사용자] -->|영상 업로드| Client[React Frontend];
+    Client -->|API 요청| Server[Flask Backend];
+    Server -->|병렬 처리| AI_Engine{AI Inference Engine};
+    
+    subgraph "Dual AI Models"
+    AI_Engine -->|Deep Analysis| Model_A[정밀 분석 모델<br>VideoMAV2];
+    AI_Engine -->|Fast Analysis| Model_B[신속 처리 모델<br>ResNet3D+I3D];
+    end
+    
+    Model_A --> Feature_Extraction[특징 추출<br>장소/유형/차량A/차량B];
+    Model_B --> Feature_Extraction;
+    
+    Feature_Extraction --> Logic[과실비율 매칭 알고리즘];
+    Logic -->|Result JSON| Client;
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 📁 디렉토리 구조 (Monorepo)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+프론트엔드와 백엔드를 명확히 분리한 Monorepo 구조를 채택하였습니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```text
+road-judge-ai/
+├── frontend/                 # React 프론트엔드
+│   ├── public/
+│   ├── src/
+│   └── package.json
+└── backend/                  # Flask 기반 백엔드 및 AI 추론 모듈
+    ├── app.py                # 메인 API 서버
+    ├── vlm_code.py           # VLM 연동 및 보안 모듈 (.env 사용)
+    ├── run_backend.sh        # 서버 실행 스크립트
+    ├── configs/              # 모델별 설정 파일 (*_config.py)
+    ├── data/                 # 과실비율 산정 데이터셋 (*.csv)
+    └── weights/              # (Git 제외) 모델 가중치 파일 (*.pth)
+```
+*(주의: 8개의 `.pth` 모델 가중치 파일과 `.env` 파일은 보안 및 용량 문제로 Git에 업로드되지 않습니다.)*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🚀 설치 및 실행 (PM2 무중단 배포)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+이 프로젝트는 **AWS EC2 (Ubuntu)** 환경에서 **Conda**와 **PM2**를 사용하여 프론트엔드와 백엔드를 백그라운드에서 동시 구동합니다.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. 환경 설정 및 의존성 설치
+**Backend (Conda 환경)**
+```bash
+conda activate aimuncheol
+cd backend
+pip install -r requirements.txt
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Frontend**
+```bash
+cd ../frontend
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 2. 서버 실행
+```bash
+# 기존 프로세스 정리
+pm2 delete all
 
-## Learn More
+# 프론트엔드 실행 (frontend 디렉토리 기준)
+pm2 start npm --name "frontend" --cwd ./frontend -- start
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# 백엔드 실행 (backend 디렉토리 기준)
+pm2 start ./run_backend.sh --name "backend" --cwd ./backend
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# 현재 상태 저장 (재부팅 시 자동 실행)
+pm2 save
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📊 AI 모델 성능 비교
 
-### Analyzing the Bundle Size
+동일하게 4가지 클래스(장소, 특성, 가해차량, 피해차량)를 예측하지만, 목적에 맞춰 아키텍처와 Loss를 다르게 튜닝하였습니다.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 🥇 모델 1. 정밀 분석 모델 (VideoMAV2)
+> **특징:** 연산량이 무거우나, LDAM 적용을 통해 데이터 불균형을 해소하고 정밀도를 높임.
 
-### Making a Progressive Web App
+| Stage | 핵심 변경점 | Model 1 (장소) | Model 2 (특성) | Model 3 (차량A) | Model 4 (차량B) |
+|---|---|---|---|---|---|
+| 1. Baseline | CE, frame interval 2 | Top1: 82.20 | Top1: 72.93 | Top1: 67.12 | Top1: 65.43 |
+| 2. Focal | CE → Focal 탐색 | Top1: 71.86 | Top1: 65.12 | Top1: 81.75 | - |
+| **3. 최종 (LDAM)** | Focal → LDAM | **Top1: 73.32** | **Top1: 68.08** | **Top1: 67.25** | - |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 🥈 모델 2. 신속 처리 모델 (ResNet3D + I3D)
+> **특징:** 효율성이 검증된 아키텍처. Fine-tuning과 Focal 재튜닝을 거쳐 최적의 밸런스 도달.
 
-### Advanced Configuration
+| Stage | 핵심 변경점 | Model 1 (장소) | Model 2 (특성) | Model 3 (차량A) | Model 4 (차량B) |
+|---|---|---|---|---|---|
+| 1. Baseline | CE, frame interval 2 | 80.85 (Acc) | 71.80 (Acc) | 66.46 (Acc) | 66.31 (Acc) |
+| 2. Focal 튜닝 | α, γ 파라미터 튜닝 | 81.17 | 72.24 | 66.52 | 66.62 |
+| **3. 최종 (Fine-tune)**| LR 1e-5 + γ 조정 | **82.42** | **72.93** | **68.66** | **68.82** |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🌐 API 명세서
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### `POST /api/analyze`
+업로드된 블랙박스 영상을 두 모델 그룹에 통과시켜 각 항목의 Top-K 예측값과 최종 과실비율을 반환합니다. (h264 코덱 자동 변환 지원)
 
-### `npm run build` fails to minify
+- **Request Body:** `multipart/form-data` (key: `video`, file: `.mp4`)
+- **Response Format:** Server-Sent Events (SSE) 기반 실시간 스트리밍 JSON
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```json
+{
+  "type": "complete",
+  "input_data": {
+    "은석": [ ... ], // 정밀 모델 분석 결과 배열
+    "형선": [ ... ]  // 신속 모델 분석 결과 배열
+  },
+  "fault_results": {
+    "은석": { "best": { "fa": 80, "fb": 20, "role_a": "가해자" }, "alts": [ ... ] },
+    "형선": { "best": { "fa": 70, "fb": 30, "role_a": "가해자" }, "alts": [ ... ] }
+  }
+}
+```
+
+---
+
+## 👨‍💻 Contributors
+
+| Name | Role | Profile |
+|:---:|:---:|:---:|
+| **나형선** | Backend / Frontend / AI | React |
+| **송수민** | Backend / Frontend / AI | React |
+| **이예영** | Backend / Frontend / AI | React |
+| **임은석** | Backend / Frontend / AI | React |
+| **함성민** | Backend / Frontend / AI | React |
+
+
+---
+*Copyright © 2026 Road Judge AI Team. All Rights Reserved.*
