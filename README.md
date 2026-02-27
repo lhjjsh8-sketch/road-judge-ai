@@ -22,20 +22,51 @@
 
 ```mermaid
 graph LR
-    User[사용자] -->|영상 업로드| Client[React Frontend];
-    Client -->|API 요청| Server[Flask Backend];
-    Server -->|병렬 처리| AI_Engine{AI Inference Engine};
-    
-    subgraph "Dual AI Models"
-    AI_Engine -->|Deep Analysis| Model_A[정밀 분석 모델<br>VideoMAV2];
-    AI_Engine -->|Fast Analysis| Model_B[신속 처리 모델<br>ResNet3D+I3D];
+    A[영상 입력] --> B[데이터 전처리]
+
+    %% C3D branch
+    B --> C[C3D]
+
+    subgraph MAE_Branch[MAE 기반 다중 표현]
+        C --> M1[MAE(1)]
+        C --> M2[MAE(2)]
+        C --> M3[MAE(3)]
+        C --> M4[MAE(4)]
     end
-    
-    Model_A --> Feature_Extraction[특징 추출<br>장소/유형/차량A/차량B];
-    Model_B --> Feature_Extraction;
-    
-    Feature_Extraction --> Logic[과실비율 매칭 알고리즘];
-    Logic -->|Result JSON| Client;
+
+    subgraph MAE_Candidate[MAE 후보 생성 및 선택]
+        M1 --> MC1[후보 생성<br/>(multi outputs)]
+        M2 --> MC1
+        M3 --> MC1
+        M4 --> MC1
+        MC1 --> MC2[내부 집계 / 랭킹]
+        MC2 --> MC3[최종 후보]
+    end
+
+    %% I3D branch
+    B --> I[I3D(Feature Extractor)]
+
+    subgraph I3D_Branch[I3D 기반 다중 표현]
+        I --> I1[I3D(1)]
+        I --> I2[I3D(2)]
+        I --> I3[I3D(3)]
+        I --> I4[I3D(4)]
+    end
+
+    subgraph I3D_Candidate[I3D 후보 생성 및 선택]
+        I1 --> IC1[후보 생성<br/>(multi outputs)]
+        I2 --> IC1
+        I3 --> IC1
+        I4 --> IC1
+        IC1 --> IC2[내부 집계 / 랭킹]
+        IC2 --> IC3[최종 후보]
+    end
+
+    %% VLM integration
+    MC3 --> V[VLM 비교 분석]
+    IC3 --> V
+
+    V --> R[VLM 해설 생성]
 ```
 
 ---
