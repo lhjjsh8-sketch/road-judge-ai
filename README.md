@@ -170,7 +170,7 @@ pm2 save
 | Stage | 핵심 변경점 | Top1 | top2 |
 |---|---|---|---|
 | 1. Baseline | CE, frame interval 2 | 38.82 (Acc) | 69.96 (Acc) |
-| **. 최종** | 아키텍처 경량화+SGD 차등학습률, Sports-1M 전이학습, Label Smoothing, 해상도 확대 | **64.13** | **84.05** |
+| **2. 최종** | 아키텍처 경량화+SGD 차등학습률, Sports-1M 전이학습, Label Smoothing, 해상도 확대 | **64.13** | **84.05** |
 
 ---
 
