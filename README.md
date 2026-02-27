@@ -167,7 +167,7 @@ pm2 save
 ### 모델 3. 단순 처리 모델 (C3D)
 > **특징:** 아키텍처 경량화+SGD 차등학습률(+18.65%p), Sports-1M 전이학습(+2.89%p), Label Smoothing(+3.77%p), 해상도 확대(+1.13%p)를 단계적으로 적용.
 
-| Stage | 핵심 변경점 | Top1 | top2 |
+| Stage | 핵심 변경점 | Top1 | top5 |
 |---|---|---|---|
 | 1. Baseline | CE, frame interval 2 | 38.82 (Acc) | 69.96 (Acc) |
 | **2. 최종** | 아키텍처 경량화+SGD 차등학습률, Sports-1M 전이학습, Label Smoothing, 해상도 확대 | **64.13** | **84.05** |
