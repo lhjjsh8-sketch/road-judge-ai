@@ -27,42 +27,41 @@ graph LR
     %% C3D branch
     B --> C[C3D]
 
-    subgraph MAE_Branch[MAE 기반 다중 표현]
-        C --> M1[MAE(1)]
-        C --> M2[MAE(2)]
-        C --> M3[MAE(3)]
-        C --> M4[MAE(4)]
+    subgraph MAE_Branch [MAE 기반 다중 표현]
+        C --> M1[MAE 1]
+        C --> M2[MAE 2]
+        C --> M3[MAE 3]
+        C --> M4[MAE 4]
     end
 
-    subgraph MAE_Candidate[MAE 후보 생성 및 선택]
-        M1 --> MC1[후보 생성<br/>(multi outputs)]
+    subgraph MAE_Candidate [MAE 후보 생성 및 선택]
+        M1 --> MC1[후보 생성 multi outputs]
         M2 --> MC1
         M3 --> MC1
         M4 --> MC1
-        MC1 --> MC2[내부 집계 / 랭킹]
+        MC1 --> MC2[내부 집계 및 랭킹]
         MC2 --> MC3[최종 후보]
     end
 
     %% I3D branch
-    B --> I[I3D(Feature Extractor)]
+    B --> I[I3D Feature Extractor]
 
-    subgraph I3D_Branch[I3D 기반 다중 표현]
-        I --> I1[I3D(1)]
-        I --> I2[I3D(2)]
-        I --> I3[I3D(3)]
-        I --> I4[I3D(4)]
+    subgraph I3D_Branch [I3D 기반 다중 표현]
+        I --> I1[I3D 1]
+        I --> I2[I3D 2]
+        I --> I3[I3D 3]
+        I --> I4[I3D 4]
     end
 
-    subgraph I3D_Candidate[I3D 후보 생성 및 선택]
-        I1 --> IC1[후보 생성<br/>(multi outputs)]
+    subgraph I3D_Candidate [I3D 후보 생성 및 선택]
+        I1 --> IC1[후보 생성 multi outputs]
         I2 --> IC1
         I3 --> IC1
         I4 --> IC1
-        IC1 --> IC2[내부 집계 / 랭킹]
+        IC1 --> IC2[내부 집계 및 랭킹]
         IC2 --> IC3[최종 후보]
     end
 
-    %% VLM integration
     MC3 --> V[VLM 비교 분석]
     IC3 --> V
 
